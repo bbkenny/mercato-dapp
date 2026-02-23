@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import Link from 'next/link'
 import { Navigation } from '@/components/navigation'
 import { Button } from '@/components/ui/button'
@@ -112,9 +112,20 @@ export default function RampPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Navigation />
-      <RampProvider>
-        <RampContent />
-      </RampProvider>
+      <Suspense
+        fallback={
+          <div className="container mx-auto flex flex-1 items-center justify-center px-4 py-8">
+            <div className="flex flex-col items-center gap-3">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" aria-hidden />
+              <p className="text-sm text-muted-foreground">Loading…</p>
+            </div>
+          </div>
+        }
+      >
+        <RampProvider>
+          <RampContent />
+        </RampProvider>
+      </Suspense>
     </div>
   )
 }

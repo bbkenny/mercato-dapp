@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Navigation } from '@/components/navigation'
@@ -21,6 +21,21 @@ import { ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function BlindPaySetupPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen flex-col">
+        <Navigation />
+        <div className="container mx-auto flex flex-1 items-center justify-center px-4 py-8">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      </div>
+    }>
+      <BlindPaySetupContent />
+    </Suspense>
+  )
+}
+
+function BlindPaySetupContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { walletInfo, isConnected, handleConnect } = useWallet()
