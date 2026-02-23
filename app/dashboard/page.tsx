@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   ExternalLink,
   Building2,
+  Wallet,
 } from 'lucide-react'
 import { formatDate } from '@/lib/date-utils'
 
@@ -209,30 +210,35 @@ export default async function DashboardPage({
   }
 
   const getQuickActions = () => {
+    const rampAction = { label: 'Add funds / Cash out', href: '/dashboard/ramp', icon: Wallet }
     switch (userType) {
       case 'pyme':
         return [
           { label: 'Create New Deal', href: '/create-deal', icon: Plus },
           { label: 'Browse Investors', href: '/marketplace?filter=funded', icon: TrendingUp },
+          rampAction,
         ]
       case 'investor':
         return [
           { label: 'Browse Deals', href: '/marketplace', icon: Package },
           { label: 'My Investments', href: '/dashboard/investments', icon: DollarSign },
+          rampAction,
         ]
       case 'supplier':
         return [
           { label: 'Manage companies', href: '/dashboard/supplier-profile', icon: Building2 },
           { label: 'View Active Deals', href: '/dashboard/deals', icon: TrendingUp },
           { label: 'Accept orders & deliveries', href: '/dashboard/deliveries', icon: CheckCircle2 },
+          rampAction,
         ]
       case 'admin':
         return [
           { label: 'Milestone approvals', href: '/dashboard/admin', icon: ShieldCheck },
           { label: 'View marketplace', href: '/marketplace', icon: Package },
+          rampAction,
         ]
       default:
-        return []
+        return [rampAction]
     }
   }
 
