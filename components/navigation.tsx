@@ -11,6 +11,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Package, Menu } from 'lucide-react'
 import { NavLinks } from '@/components/navigation/nav-links'
 import { UserNav, type NavProfile, type NavUser } from '@/components/navigation/user-nav'
+import { NotificationDropdown } from '@/components/notifications/notification-dropdown'
 
 export function Navigation() {
   const router = useRouter()
@@ -81,6 +82,7 @@ export function Navigation() {
         <div className="flex items-center gap-4">
           <div className="hidden items-center gap-3 md:flex">
             <ThemeToggle />
+            {user?.id && <NotificationDropdown userId={user.id} variant="desktop" />}
             <UserNav
               variant="desktop"
               user={user}
@@ -98,6 +100,7 @@ export function Navigation() {
 
           <div className="flex items-center gap-2 md:hidden">
             <ThemeToggle />
+            {user?.id && <NotificationDropdown userId={user.id} variant="mobile" />}
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label="Open menu">

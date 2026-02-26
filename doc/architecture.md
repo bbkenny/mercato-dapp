@@ -602,6 +602,7 @@ flowchart LR
     Profiles["profiles\n(id, role, name, company, stellar_address)"]
     Deals["deals\n(pyme_id, supplier_id, investor_id, amount, status)"]
     Milestones["milestones\n(deal_id, status, amount, description)"]
+    Notifications["notifications\n(user_id, type, title, body, link_url, read_at)"]
     SupplierCompanies["supplier_companies\n(owner_id, name, country, sector)"]
     SupplierProducts["supplier_products\n(supplier_id, name, category, price)"]
   end
@@ -622,6 +623,21 @@ flowchart LR
 | **Stellar** | Escrow contracts, USDC balances, transaction history | Funds, on-chain escrow state, payment receipts |
 
 The app reads both stores and reconciles: deal status in Supabase reflects the on-chain escrow state after milestone releases.
+
+### 7.1 In-App Notifications
+
+A `notifications` table stores lifecycle events. **DB triggers** create notifications automatically for:
+
+| Event | Recipients |
+|-------|-----------|
+| Deal created | All investors |
+| Deal funded | Supplier (company owner), PyME |
+| First milestone approved | Investor, PyME, Supplier |
+| Second milestone approved | Investor, PyME, Supplier |
+| PyME × Investor deal created | PyME, Investor (when repayment escrow exists) |
+| PyME × Investor deal complete | PyME, Investor (when repayment escrow exists) |
+
+The bell icon in the nav shows unread count; clicking opens a dropdown with recent notifications and links to deals. Apply `scripts/014_create_notifications.sql` to enable.
 
 ---
 
