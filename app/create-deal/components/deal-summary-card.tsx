@@ -8,12 +8,14 @@ interface DealSummaryCardProps {
   formData: Pick<CreateDealFormData, 'supplierName' | 'term'>
   productName: string
   totalAmount: number
+  calculatedAPR?: number
 }
 
 export function DealSummaryCard({
   formData,
   productName,
   totalAmount,
+  calculatedAPR,
 }: DealSummaryCardProps) {
   return (
     <Card>
@@ -40,6 +42,13 @@ export function DealSummaryCard({
           <p className="text-sm text-muted-foreground">Term</p>
           <p className="font-medium">{formData.term} days</p>
         </div>
+        {calculatedAPR != null && (
+          <div>
+            <p className="text-sm text-muted-foreground">Investor Yield APR (calculated)</p>
+            <p className="font-medium text-success">{calculatedAPR.toFixed(1)}%</p>
+            <p className="text-xs text-muted-foreground">Based on {formData.term} days and deal amount</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

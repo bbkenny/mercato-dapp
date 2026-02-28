@@ -28,6 +28,7 @@ interface SupplierStepProps {
   filteredSuppliers: SupplierOption[]
   totalAmount: number
   estimatedYield: number
+  calculatedAPR?: number
   onUpdate: (field: keyof CreateDealFormData, value: string) => void
   onSupplierSelect: (supplierId: string) => void
 }
@@ -37,6 +38,7 @@ export function SupplierStep({
   filteredSuppliers,
   totalAmount,
   estimatedYield,
+  calculatedAPR,
   onUpdate,
   onSupplierSelect,
 }: SupplierStepProps) {
@@ -142,6 +144,11 @@ export function SupplierStep({
                 {formatPercent((estimatedYield / totalAmount) * 100)})
               </span>
             </div>
+            {calculatedAPR != null && (
+              <p className="text-xs text-muted-foreground">
+                Based on {calculatedAPR.toFixed(1)}% APR (from {formData.term} days and deal amount)
+              </p>
+            )}
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">
                 You Repay (estimate)

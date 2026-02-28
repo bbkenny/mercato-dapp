@@ -27,6 +27,7 @@ import { MilestonesStep } from './components/milestones-step'
 import { StepProgress } from './components/step-progress'
 import { DealSummaryCard } from './components/deal-summary-card'
 import { HowItWorksCard } from './components/how-it-works-card'
+import { calculateYieldAPR } from '@/lib/yield'
 
 export default function CreateDealContent() {
   const router = useRouter()
@@ -133,7 +134,9 @@ export default function CreateDealContent() {
     selectedProduct && formData.quantity
       ? Number(formData.quantity) * Number(selectedProduct.price_per_unit)
       : 0
-  const estimatedYield = totalAmount * 0.12 * (Number(formData.term) / 365)
+  const termDays = Number(formData.term || 60)
+  const calculatedAPR = calculateYieldAPR(termDays, totalAmount)
+  const estimatedYield = totalAmount * (calculatedAPR / 100) * (termDays / 365)
 
   const updateFormData = (field: keyof CreateDealFormData, value: string) => {
     setFormData((prev) => {
@@ -232,7 +235,7 @@ export default function CreateDealContent() {
           product_unit_price: productUnitPrice,
           amount: totalAmount,
           term_days: Number(formData.term),
-          interest_rate: 12,
+          interest_rate: calculatedAPR,
           category: formData.category || selectedProduct.category || 'other',
           status: 'seeking_funding',
           supplier_id: formData.supplierId,
@@ -405,6 +408,7 @@ export default function CreateDealContent() {
                 filteredSuppliers={filteredSuppliers}
                 totalAmount={totalAmount}
                 estimatedYield={estimatedYield}
+                calculatedAPR={calculatedAPR}
                 onUpdate={updateFormData}
                 onSupplierSelect={handleSupplierSelect}
               />
@@ -461,6 +465,7 @@ export default function CreateDealContent() {
               formData={formData}
               productName={selectedProduct?.name ?? ''}
               totalAmount={totalAmount}
+              calculatedAPR={totalAmount > 0 ? calculatedAPR : undefined}
             />
             <HowItWorksCard />
           </div>

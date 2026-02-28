@@ -1,4 +1,5 @@
 import type { Deal, DealStatus, Milestone } from './types'
+import { calculateYieldAPR } from './yield'
 
 /** DB deal row with optional relations from Supabase select */
 export interface DealRow {
@@ -128,6 +129,11 @@ export function mapDealFromDb(row: DealRow): Deal {
     investorId: row.investor_id ?? undefined,
     description: row.description ?? undefined,
     category: row.category ?? undefined,
-    yieldAPR: row.interest_rate != null ? Number(row.interest_rate) : undefined,
+    yieldAPR: (() => {
+      const amount = Number(row.amount ?? 0)
+      const termDays = row.term_days ?? 0
+      if (amount <= 0 || termDays <= 0) return undefined
+      return calculateYieldAPR(termDays, amount)
+    })(),
   }
 }
