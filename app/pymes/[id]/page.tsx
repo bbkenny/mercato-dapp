@@ -25,6 +25,7 @@ import {
   computePymeReputation,
   type PymeReputationTier,
 } from '@/lib/pyme-reputation'
+import { ReputationTooltip } from '@/components/reputation-tooltip'
 
 type DealRow = {
   id: string
@@ -76,7 +77,7 @@ export default async function SmbDetailPage({
 
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('id, company_name, bio, full_name, contact_name, email, phone, address, user_type, country, sector, verified')
+    .select('id, company_name, bio, full_name, contact_name, email, phone, address, user_type, country, sector, verified, stake_amount, stake_updated_at')
     .eq('id', id)
     .single()
 
@@ -109,6 +110,8 @@ export default async function SmbDetailPage({
       currency: 'USD',
       maximumFractionDigits: 0,
     }).format(value)
+
+  const stakeAmount = Math.max(0, Number(profile.stake_amount ?? 0) || 0)
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -169,7 +172,15 @@ export default async function SmbDetailPage({
             {/* Reputation badge */}
             {reputation.tier !== 'new' && (
               <div className={`shrink-0 rounded-lg border px-3 py-2 text-center ${TIER_STYLES[reputation.tier]}`}>
-                <p className="text-xs font-medium opacity-70 mb-0.5">Reputation</p>
+                <div className="mb-0.5 flex items-center justify-center gap-1">
+                  <p className="text-xs font-medium opacity-70">Reputation</p>
+                  <ReputationTooltip
+                    reputation={reputation}
+                    side="bottom"
+                    align="end"
+                    triggerClassName="h-4 w-4 text-current opacity-60 hover:opacity-100 hover:bg-transparent"
+                  />
+                </div>
                 <p className="text-sm font-semibold">{reputation.label}</p>
               </div>
             )}
@@ -177,7 +188,7 @@ export default async function SmbDetailPage({
         </div>
 
         {/* Stats grid */}
-        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <Card>
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-1.5">
@@ -224,6 +235,17 @@ export default async function SmbDetailPage({
               </CardTitle>
             </CardHeader>
           </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-1.5">
+                <Wallet className="h-3.5 w-3.5" />
+                Trust stake
+              </CardDescription>
+              <CardTitle className="text-2xl tabular-nums text-primary">
+                {stakeAmount > 0 ? formatPrice(stakeAmount) : '—'}
+              </CardTitle>
+            </CardHeader>
+          </Card>
         </div>
 
         {/* Repayment track record */}
@@ -232,6 +254,7 @@ export default async function SmbDetailPage({
             <CardTitle className="flex items-center gap-2 text-base">
               <ShieldCheck className="h-5 w-5 text-primary" aria-hidden />
               Repayment track record
+              <ReputationTooltip reputation={reputation} side="bottom" align="start" />
             </CardTitle>
             <CardDescription>{reputation.description} Helps investors assess repayment behavior.</CardDescription>
           </CardHeader>
