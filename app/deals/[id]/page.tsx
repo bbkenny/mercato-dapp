@@ -41,6 +41,7 @@ import {
   Lock,
   ArrowLeft,
 } from 'lucide-react'
+import { useI18n } from '@/lib/i18n/provider'
 
 /** Match "Shipment Confirmation" milestone (supplier accepts order) */
 function isShipmentMilestone(name: string, index: number, total: number): boolean {
@@ -68,6 +69,7 @@ function formatFundingRemaining(ms: number): string {
 }
 
 export default function DealDetailPage() {
+  const { t } = useI18n()
   const params = useParams()
   const dealId = typeof params.id === 'string' ? params.id : params.id?.[0]
   const [deal, setDeal] = useState<Deal | null>(null)
@@ -234,12 +236,12 @@ export default function DealDetailPage() {
         <Navigation />
         <div className="container mx-auto flex flex-1 items-center justify-center px-4">
           <div className="text-center">
-            <h1 className="mb-2 text-2xl font-bold">Deal Not Found</h1>
+            <h1 className="mb-2 text-2xl font-bold">{t('deals.noDeals')}</h1>
             <p className="mb-4 text-muted-foreground">
               The deal you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
             </p>
             <Button asChild>
-              <Link href="/deals">Back to deals</Link>
+              <Link href="/deals">{t('common.back')}</Link>
             </Button>
           </div>
         </div>
@@ -248,13 +250,13 @@ export default function DealDetailPage() {
   }
 
   const statusConfig = {
-    awaiting_funding: { label: 'Open for Funding', color: 'text-accent', bgColor: 'bg-accent/10' },
-    funded: { label: 'Funded', color: 'text-success', bgColor: 'bg-success/10' },
-    in_progress: { label: 'In Progress', color: 'text-warning', bgColor: 'bg-warning/10' },
-    milestone_pending: { label: 'Milestone Pending', color: 'text-warning', bgColor: 'bg-warning/10' },
-    completed: { label: 'Completed', color: 'text-success', bgColor: 'bg-success/10' },
-    disputed: { label: 'Disputed', color: 'text-destructive', bgColor: 'bg-destructive/10' },
-    released: { label: 'Released', color: 'text-success', bgColor: 'bg-success/10' },
+    awaiting_funding: { label: t('dealStatus.awaiting_funding'), color: 'text-accent', bgColor: 'bg-accent/10' },
+    funded: { label: t('dealStatus.funded'), color: 'text-success', bgColor: 'bg-success/10' },
+    in_progress: { label: t('dealStatus.in_progress'), color: 'text-warning', bgColor: 'bg-warning/10' },
+    milestone_pending: { label: t('dealStatus.milestone_pending'), color: 'text-warning', bgColor: 'bg-warning/10' },
+    completed: { label: t('dealStatus.completed'), color: 'text-success', bgColor: 'bg-success/10' },
+    disputed: { label: t('dealStatus.disputed'), color: 'text-destructive', bgColor: 'bg-destructive/10' },
+    released: { label: t('dealStatus.released'), color: 'text-success', bgColor: 'bg-success/10' },
   }
 
   const fundingStatusConfig = {
@@ -551,10 +553,10 @@ export default function DealDetailPage() {
         <div className="mb-6 flex items-center gap-1.5 text-sm text-muted-foreground">
           <Link href="/deals" className="flex items-center gap-1 hover:text-foreground">
             <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
-            Deals
+            {t('deals.title')}
           </Link>
           <ChevronRight className="h-3.5 w-3.5 opacity-40" aria-hidden />
-          <span className="truncate text-foreground/70">{deal.productName || 'Deal details'}</span>
+          <span className="truncate text-foreground/70">{deal.productName || t('deals.viewDeal')}</span>
         </div>
 
         {/* Header */}
@@ -574,7 +576,7 @@ export default function DealDetailPage() {
                 {(deal.yieldBonusApr ?? 0) > 0 && (
                   <Badge variant="secondary" className="gap-1 bg-success/10 text-success">
                     <Sparkles className="h-3 w-3" aria-hidden />
-                    +{deal.yieldBonusApr}% bonus APR
+                    +{deal.yieldBonusApr}% {t('deals.bonusApr').replace('+', '')}
                   </Badge>
                 )}
               </div>
@@ -592,7 +594,7 @@ export default function DealDetailPage() {
                     <DialogTrigger asChild>
                       <Button size="lg" className="gap-2 shadow-sm">
                         <Wallet className="h-5 w-5" aria-hidden />
-                        Fund {formatCurrency(deal.priceUSDC)}
+                        {t('deals.fundThisDeal')} {formatCurrency(deal.priceUSDC)}
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-md">
@@ -732,26 +734,26 @@ export default function DealDetailPage() {
           {/* Quick stats row */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3 text-center">
-              <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Amount</p>
+              <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{t('common.amount')}</p>
               <p className="mt-1 text-xl font-bold tabular-nums">{formatCurrency(deal.priceUSDC)}</p>
-              <p className="text-[11px] text-muted-foreground">USDC</p>
+              <p className="text-[11px] text-muted-foreground">{t('deals.usdc')}</p>
             </div>
             <div className={`rounded-xl border px-4 py-3 text-center ${deal.yieldAPR ? 'border-success/30 bg-success/5' : 'border-border bg-muted/30'}`}>
-              <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">APR</p>
+              <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{t('deals.apr')}</p>
               {deal.yieldAPR ? (
                 <p className="mt-1 text-xl font-bold tabular-nums text-success">{deal.yieldAPR.toFixed(1)}%</p>
               ) : (
                 <p className="mt-1 text-xl text-muted-foreground">—</p>
               )}
-              <p className="text-[11px] text-muted-foreground">yield</p>
+              <p className="text-[11px] text-muted-foreground">{t('common.yield')}</p>
             </div>
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3 text-center">
-              <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Term</p>
+              <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{t('common.term')}</p>
               <p className="mt-1 text-xl font-bold tabular-nums">{deal.term}</p>
-              <p className="text-[11px] text-muted-foreground">days</p>
+              <p className="text-[11px] text-muted-foreground">{t('common.days')}</p>
             </div>
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3 text-center">
-              <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Quantity</p>
+              <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{t('common.quantity')}</p>
               <p className="mt-1 text-xl font-bold tabular-nums">{deal.quantity.toLocaleString()}</p>
               <p className="text-[11px] text-muted-foreground">units</p>
             </div>
